@@ -1,0 +1,18 @@
+{
+  "name": "silinternational/ssp-utilities",
+  "description": "SimpleSAMLphp related utility classes",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Phillip Shipley",
+      "email": "phillip.shipley@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=5.4",
+    "roave/security-advisories": "dev-master"
+  }
+}
+
