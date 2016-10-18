@@ -1,0 +1,7 @@
+version: "2"
+services:
+  cli:
+    image: silintl/php7
+    volumes:
+      - ./:/data
+    working_dir: /data
