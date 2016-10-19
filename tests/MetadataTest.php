@@ -68,7 +68,7 @@ class MetadataTest extends TestCase
         $path = __DIR__ . '/fixtures/metadata/set1';
         $entries = Metadata::getIdpMetadataEntries($path);
 
-        $expectedEntities = ['idp1', 'idp2', 'sub-idp'];
+        $expectedEntities = ['idp1', 'idp2', 'sub-idp3a', 'sub-idp3b', 'sub-idp3c'];
 
         $this->assertEquals($expectedEntities, array_keys($entries));
     }
