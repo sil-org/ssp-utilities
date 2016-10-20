@@ -287,17 +287,19 @@ class AuthSourcesUtilsTest extends TestCase
         );
         
         $expected = [
-            ['idp-bare', ''],
-            ['idp-exclude', ''],
+            ['idp-bare'],
+            ['idp-exclude'],
             ['idp-forSps', 'http://idp-forSps-logo.png'],
-            ['idp-forSpsExclude', ''],
+            ['idp-forSpsExclude'],
         ];
         
         $results = [];
         foreach ($sources as $nextSource) {
-            $results[] = [$nextSource['source'], 
-                          $nextSource[AuthSourcesUtils::IDP_LOGO_KEY]
-                         ];
+            $newEntry = [$nextSource['source']];
+            if (isset($nextSource[AuthSourcesUtils::IDP_LOGO_KEY])) {
+                $newEntry[] = $nextSource[AuthSourcesUtils::IDP_LOGO_KEY];
+            }
+            $results[] = $newEntry;
         }
 
         $this->assertEquals($expected, $results);

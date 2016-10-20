@@ -165,6 +165,7 @@ class AuthSourcesUtils
     /**
      * Gets the logoURL entries from the IDP's metadata and adds them to 
      *   the sources array that is available to the multiauth page.
+     * Doesn't add an entry at all, if it is missing or invalid.
      *
      * @param array &$sources 
      */
@@ -178,29 +179,27 @@ class AuthSourcesUtils
         $idpEntries = self::getIdpsFromAuthSources($authSourcesConfig);      
 
         foreach ($sources as &$source) {
-            $logoURL = '';
             $idpLabel = $source['source'];
             $idpEntityId = $idpEntries[$idpLabel];    
             
-            /*
-             * If there is an entry for the idp in saml20-idp-remote.php,
-             * and that entry has a logo URL entry, use it.
-             */
-            if (isset($idpMetadata[$idpEntityId]) &&
-                    isset($idpMetadata[$idpEntityId][self::IDP_LOGO_KEY])) {
-                
-                $logoURL = $idpMetadata[$idpEntityId][self::IDP_LOGO_KEY];
-            }          
+            // If there is no entry for the idp in saml20-idp-remote.php, skip it
+            if ( ! isset($idpMetadata[$idpEntityId])) {
+                continue;
+            }
+            $idpMdEntry = $idpMetadata[$idpEntityId];
+            
+            // If there is no logo URL entry in the metadata, skip it
+            if ( ! isset($idpMdEntry[self::IDP_LOGO_KEY])) {
+                continue;
+            }        
+
+            $logoURL = $idpMdEntry[self::IDP_LOGO_KEY];          
             
             // sanitize and validate the url
             $logoURL = filter_var($logoURL, FILTER_SANITIZE_URL);
             if (!filter_var($logoURL, FILTER_VALIDATE_URL) === false) {
                 $source[self::IDP_LOGO_KEY] = $logoURL; // valid url
-            } else {
-                $source[self::IDP_LOGO_KEY] = ''; // not a valid URL
-            }            
-            
-        }
-            
+            }   
+        }  
     }
 }
