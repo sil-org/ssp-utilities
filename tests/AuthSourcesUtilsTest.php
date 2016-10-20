@@ -4,10 +4,10 @@ namespace Sil\SspUtilsTests;
 include __DIR__ . '/../vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
-use Sil\SspUtils\LimitAuthSources;
+use Sil\SspUtils\AuthSourcesUtils;
 use Sil\SspUtils\Metadata;
 
-class LimitAuthSourcesTest extends TestCase
+class AuthSourcesUtilsTest extends TestCase
 {
     public static $authSourcesConfig = [
             'auth-choices' => [
@@ -78,7 +78,7 @@ class LimitAuthSourcesTest extends TestCase
             'idp-forSpsExclude' => 'idp-forSpsExclude',
         ];
 
-        $results = LimitAuthSources::getIdpsFromAuthSources(self::$authSourcesConfig);
+        $results = AuthSourcesUtils::getIdpsFromAuthSources(self::$authSourcesConfig);
         $this->assertEquals($expected, $results);
     }
     
@@ -103,7 +103,7 @@ class LimitAuthSourcesTest extends TestCase
             ],
         ];
         
-        $results = LimitAuthSources::getSources(
+        $results = AuthSourcesUtils::getSources(
             self::$authSourcesConfig, 
             $startSources, 
             $spEntityId,
@@ -141,7 +141,7 @@ class LimitAuthSourcesTest extends TestCase
             ],
         ];
         
-        $results = LimitAuthSources::getSources(
+        $results = AuthSourcesUtils::getSources(
             self::$authSourcesConfig, 
             $startSources, 
             $spEntityId,
@@ -178,7 +178,7 @@ class LimitAuthSourcesTest extends TestCase
             ],
         ];
         
-        $results = LimitAuthSources::getSources(
+        $results = AuthSourcesUtils::getSources(
             self::$authSourcesConfig, 
             $startSources, 
             $spEntityId,
@@ -211,7 +211,7 @@ class LimitAuthSourcesTest extends TestCase
             ],
         ];
         
-        $results = LimitAuthSources::getSources(
+        $results = AuthSourcesUtils::getSources(
             self::$authSourcesConfig, 
             $startSources, 
             $spEntityId,
@@ -219,6 +219,53 @@ class LimitAuthSourcesTest extends TestCase
             $metadataPath
         );
         
+        $this->assertEquals($expected, $results);
+    }    
+    
+
+    /**
+     * Good config
+     */
+    public function testGetAuthSourcesConfig()
+    {
+        $path = __DIR__ . '/fixtures/config';
+
+        $expected = [
+            'auth-choices' => [
+                'multiauth:MultiAuth',
+
+                'sources' => [
+                    'idp-bare', 
+                ],
+            ], 
+
+            'idp-bare' =>  [
+                'saml:SP',
+                'entityID' => 'ssp-hub',
+                'idp' => 'idp-bare',
+                'discoURL'  => NULL,
+            ],            
+        ];
+
+        $results = AuthSourcesUtils::getAuthSourcesConfig($path);
+        $this->assertEquals($expected, $results);
+    }
+    
+    
+    /**
+     * Ensure exception is thrown
+     */
+    public function testGetAuthSourcesConfigBad()
+    {
+        $path = __DIR__ . '/fixtures/config';
+        $fileName = 'authsourcesBad.php';
+
+        $expected = ['auth-choices'];      
+
+        $this->expectException('Sil\SspUtils\InvalidAuthSourcesException');
+        $this->expectExceptionCode(1476966993);
+        
+        $results = AuthSourcesUtils::getAuthSourcesConfig($path, $fileName);
         $this->assertEquals($expected, $results);
     }    
 }

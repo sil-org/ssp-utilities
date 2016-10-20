@@ -6,7 +6,7 @@ include __DIR__ . '/../vendor/autoload.php';
 
 use Sil\SspUtils\Metadata;
 
-class LimitAuthSources
+class AuthSourcesUtils
 {
 
     const IDP_SOURCES_KEY = 'idpList'; // the current SP's array of acceptable IDP's
@@ -133,6 +133,31 @@ class LimitAuthSources
         return $idpEntries;
     }
 
-
+    /**
+     * @param string $path Path to directory containing authsources files
+     * @param string $file Name of authsources file ... default is "authsources.php"
+     */
+    public static function getAuthSourcesConfig($path, $file="authsources.php")
+    {  
+        $pathFile = $path . '/' . $file;
+        
+        try {
+            $authSourcesContents = include $pathFile;
+            
+            if ($config === Null or ! $config) {
+                throw new InvalidAuthSourcesException(
+                    'Invalid authsources config for ' . $pathFile . PHP_EOL . 
+                        'Cannot be null or evaluate to false.',
+                    1476966993
+                );
+            }
+            
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        
+        return $config;
+        
+    }
     
 }
