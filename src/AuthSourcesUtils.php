@@ -11,6 +11,8 @@ class AuthSourcesUtils
 
     const IDP_SOURCES_KEY = 'idpList'; // the current SP's array of acceptable IDP's
     
+    const IDP_LOGO_KEY = 'logoURL'; // The IDP metadata array key for the url to the IDP's logo
+    
     const EXCLUDE_KEY = 'excludeByDefault'; // Entry in an IDP's metadata
     
     const FOR_SPS_KEY = 'forSps';  // Entry in an IDP's metadata for SP exclusive whitelist
@@ -135,7 +137,7 @@ class AuthSourcesUtils
 
     /**
      * @param string $path Path to directory containing authsources files
-     * @param string $file Name of authsources file ... default is "authsources.php"
+     * @param string $file (optional) Name of authsources file ... default is "authsources.php"
      */
     public static function getAuthSourcesConfig($path, $file="authsources.php")
     {  
@@ -160,4 +162,45 @@ class AuthSourcesUtils
         
     }
     
+    /**
+     * Gets the logoURL entries from the IDP's metadata and adds them to 
+     *   the sources array that is available to the multiauth page.
+     *
+     * @param array &$sources 
+     */
+    public static function addIdpLogoUrls(
+        &$sources, 
+        $authSourcesConfig, 
+        $metadataPath
+    ) {     
+        
+        $idpMetadata = Metadata::getIdpMetadataEntries($metadataPath);
+        $idpEntries = self::getIdpsFromAuthSources($authSourcesConfig);      
+
+        foreach ($sources as &$source) {
+            $logoURL = '';
+            $idpLabel = $source['source'];
+            $idpEntityId = $idpEntries[$idpLabel];    
+            
+            /*
+             * If there is an entry for the idp in saml20-idp-remote.php,
+             * and that entry has a logo URL entry, use it.
+             */
+            if (isset($idpMetadata[$idpEntityId]) &&
+                    isset($idpMetadata[$idpEntityId][self::IDP_LOGO_KEY])) {
+                
+                $logoURL = $idpMetadata[$idpEntityId][self::IDP_LOGO_KEY];
+            }          
+            
+            // sanitize and validate the url
+            $logoURL = filter_var($logoURL, FILTER_SANITIZE_URL);
+            if (!filter_var($logoURL, FILTER_VALIDATE_URL) === false) {
+                $source[self::IDP_LOGO_KEY] = $logoURL; // valid url
+            } else {
+                $source[self::IDP_LOGO_KEY] = ''; // not a valid URL
+            }            
+            
+        }
+            
+    }
 }

@@ -250,10 +250,9 @@ class AuthSourcesUtilsTest extends TestCase
         $results = AuthSourcesUtils::getAuthSourcesConfig($path);
         $this->assertEquals($expected, $results);
     }
-    
-    
+        
     /**
-     * Ensure exception is thrown
+     * Ensure exception is thrown for empty config
      */
     public function testGetAuthSourcesConfigBad()
     {
@@ -268,4 +267,40 @@ class AuthSourcesUtilsTest extends TestCase
         $results = AuthSourcesUtils::getAuthSourcesConfig($path, $fileName);
         $this->assertEquals($expected, $results);
     }    
+    
+    
+    /*
+     * 
+     * 
+     */
+    public function testAddIdpLogoUrls()
+    {    
+        $metadataPath = __DIR__ . '/fixtures/metadata/set4_authSources';
+        $sources = self::getTestSources();
+        
+        $spEntries = Metadata::getSpMetadataEntries($metadataPath);
+        
+        AuthSourcesUtils::addIdpLogoUrls(
+            $sources,
+            self::$authSourcesConfig, 
+            $metadataPath
+        );
+        
+        $expected = [
+            ['idp-bare', ''],
+            ['idp-exclude', ''],
+            ['idp-forSps', 'http://idp-forSps-logo.png'],
+            ['idp-forSpsExclude', ''],
+        ];
+        
+        $results = [];
+        foreach ($sources as $nextSource) {
+            $results[] = [$nextSource['source'], 
+                          $nextSource[AuthSourcesUtils::IDP_LOGO_KEY]
+                         ];
+        }
+
+        $this->assertEquals($expected, $results);
+    }
+    
 }
