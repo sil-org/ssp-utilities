@@ -314,9 +314,9 @@ class AuthSourcesUtilsTest extends TestCase
         
         $expected = [
             ['idp-bare'],
-            ['idp-exclude'],
+            ['idp-exclude', "http://www.bd.com"],
             ['idp-forSps', 'http://idp-forSps-logo.png'],
-            ['idp-forSpsExclude'],
+            ['idp-forSpsExclude', false],
         ];
         
         $results = [];

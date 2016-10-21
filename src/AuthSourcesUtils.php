@@ -293,11 +293,9 @@ class AuthSourcesUtils
 
             $logoURL = $idpMdEntry[self::IDP_LOGO_KEY];          
             
-            // sanitize and validate the url
+            // sanitize the url (remove bad characters and just return false if it's not a string)
             $logoURL = filter_var($logoURL, FILTER_SANITIZE_URL);
-            if (!filter_var($logoURL, FILTER_VALIDATE_URL) === false) {
-                $source[self::IDP_LOGO_KEY] = $logoURL; // valid url
-            }   
+            $source[self::IDP_LOGO_KEY] = $logoURL; 
         }  
     }
 }
