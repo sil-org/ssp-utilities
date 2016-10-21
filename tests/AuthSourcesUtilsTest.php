@@ -9,6 +9,12 @@ use Sil\SspUtils\Metadata;
 
 class AuthSourcesUtilsTest extends TestCase
 {
+    public static function getAuthState($spEntityId) {
+        return '_5ee8efaf7292af:http://ssp-hub/saml2/idp/SSOService.php?spentityid=' .
+          $spEntityId . '&cookieTime=1476968808&RelayState=' . $spEntityId . 
+          '%253A8080%252Fmodule.php%252Fcore%252Fauthenticate.php%253Fas%253Dssp-hub';
+    }
+  
     public static $authSourcesConfig = [
             'auth-choices' => [
                 'multiauth:MultiAuth',
@@ -51,9 +57,12 @@ class AuthSourcesUtilsTest extends TestCase
             ],             
         ];
         
-    public static function getTestSources()
+    public static function getTestSources($authSourcesConfig=Null)
     {
-        $oldSources = self::$authSourcesConfig;
+        if ($authSourcesConfig === Null) {
+            $authSourcesConfig = self::$authSourcesConfig;
+        }
+        $oldSources = $authSourcesConfig;
         unset($oldSources['auth-choices']);
         unset($oldSources['admin']);
         
@@ -89,7 +98,7 @@ class AuthSourcesUtilsTest extends TestCase
      */
     public function testGetSourcesSpBare()
     {    
-        $metadataPath = __DIR__ . '/fixtures/metadata/set4_authSources';
+        $metadataPath = __DIR__ . '/fixtures/authSources/metadata';
         $spEntries = Metadata::getSpMetadataEntries($metadataPath);
         
         $startSources = self::getTestSources();
@@ -123,7 +132,7 @@ class AuthSourcesUtilsTest extends TestCase
      */    
     public function testGetSourcesSpOnForSps()
     {    
-        $metadataPath = __DIR__ . '/fixtures/metadata/set4_authSources';
+        $metadataPath = __DIR__ . '/fixtures/authSources/metadata';
         $spEntries = Metadata::getSpMetadataEntries($metadataPath);
         
         $startSources = self::getTestSources();
@@ -160,7 +169,7 @@ class AuthSourcesUtilsTest extends TestCase
      */      
     public function testGetSourcesSpOnForSps2()
     {    
-        $metadataPath = __DIR__ . '/fixtures/metadata/set4_authSources';
+        $metadataPath = __DIR__ . '/fixtures/authSources/metadata';
         $spEntries = Metadata::getSpMetadataEntries($metadataPath);
         
         $startSources = self::getTestSources();
@@ -197,7 +206,7 @@ class AuthSourcesUtilsTest extends TestCase
      */      
     public function testGetSourcesSpWithIdpList()
     {    
-        $metadataPath = __DIR__ . '/fixtures/metadata/set4_authSources';
+        $metadataPath = __DIR__ . '/fixtures/authSources/metadata';
         $spEntries = Metadata::getSpMetadataEntries($metadataPath);
         
         $startSources = self::getTestSources();
@@ -228,23 +237,40 @@ class AuthSourcesUtilsTest extends TestCase
      */
     public function testGetAuthSourcesConfig()
     {
-        $path = __DIR__ . '/fixtures/config';
+        $path = __DIR__ . '/fixtures/authSources/config';
 
         $expected = [
             'auth-choices' => [
                 'multiauth:MultiAuth',
 
                 'sources' => [
-                    'idp-bare', 
+                    'idp-bare', 'idp-exclude', 'idp-forSps', 'idp-forSpsExclude',
                 ],
             ], 
-
             'idp-bare' =>  [
                 'saml:SP',
                 'entityID' => 'ssp-hub',
                 'idp' => 'idp-bare',
                 'discoURL'  => NULL,
-            ],            
+            ],   
+            'idp-exclude' =>  [
+                'saml:SP',
+                'entityID' => 'ssp-hub',
+                'idp' => 'idp-exclude',
+                'discoURL'  => NULL,
+            ],   
+            'idp-forSps' =>  [
+                'saml:SP',
+                'entityID' => 'ssp-hub',
+                'idp' => 'idp-forSps',
+                'discoURL'  => NULL,
+            ],    
+            'idp-forSpsExclude' =>  [
+                'saml:SP',
+                'entityID' => 'ssp-hub',
+                'idp' => 'idp-forSpsExclude',
+                'discoURL'  => NULL,
+            ],     
         ];
 
         $results = AuthSourcesUtils::getAuthSourcesConfig($path);
@@ -256,7 +282,7 @@ class AuthSourcesUtilsTest extends TestCase
      */
     public function testGetAuthSourcesConfigBad()
     {
-        $path = __DIR__ . '/fixtures/config';
+        $path = __DIR__ . '/fixtures/authSources/config';
         $fileName = 'authsourcesBad.php';
 
         $expected = ['auth-choices'];      
@@ -275,7 +301,7 @@ class AuthSourcesUtilsTest extends TestCase
      */
     public function testAddIdpLogoUrls()
     {    
-        $metadataPath = __DIR__ . '/fixtures/metadata/set4_authSources';
+        $metadataPath = __DIR__ . '/fixtures/authSources/metadata';
         $sources = self::getTestSources();
         
         $spEntries = Metadata::getSpMetadataEntries($metadataPath);
@@ -305,4 +331,62 @@ class AuthSourcesUtilsTest extends TestCase
         $this->assertEquals($expected, $results);
     }
     
+    public function testGetSourcesForSp()
+    {
+        $sspPath = __DIR__ . '/fixtures/authSources';
+        $spEntries = Metadata::getSpMetadataEntries($sspPath);
+        
+        $startSources = self::getTestSources();
+        
+        $spEntityId = 'sp-bare';
+        $spMetadata = $spEntries[$spEntityId];
+        
+        $expected = [
+            [
+                'source' => 'idp-bare',
+                'details' => self::$authSourcesConfig['idp-bare'],
+            ],
+        ];
+        
+        $results = AuthSourcesUtils::getSourcesForSp(
+            $startSources, 
+            self::getAuthState($spEntityId), 
+            $sspPath
+        );
+
+        $this->assertEquals($expected, $results);
+    }
+    
+    public function testGetSourcesWithLogoUrls()
+    {
+        $sspPath = __DIR__ . '/fixtures/authSources';
+        $spEntries = Metadata::getSpMetadataEntries($sspPath);
+        
+        $authSourcesConfig = AuthSourcesUtils::getAuthSourcesConfig(
+            $sspPath . '/config');
+        $startSources = self::getTestSources($authSourcesConfig);
+        $spEntityId = 'sp-onForSps';
+        $spMetadata = $spEntries[$spEntityId];
+        
+        $expected = [
+            [
+                'source' => 'idp-bare',
+                'details' => self::$authSourcesConfig['idp-bare'],
+            ],
+            [
+                'source' => 'idp-forSps',
+                'details' => self::$authSourcesConfig['idp-forSps'],
+                'logoURL' => 'http://idp-forSps-logo.png'
+            ],
+        ];
+        
+        $authState = self::getAuthState($spEntityId);
+        $results = AuthSourcesUtils::getSourcesWithLogoUrls(
+            $startSources, 
+            $authState, 
+            $sspPath
+        );      
+
+        $this->assertEquals($expected, $results);
+    }
 }

@@ -17,7 +17,99 @@ class AuthSourcesUtils
     
     const FOR_SPS_KEY = 'forSps';  // Entry in an IDP's metadata for SP exclusive whitelist
     
+    const SSP_PATH_ENV = 'SSP_PATH'; // Environment variable for the path to the simplesamlphp code
+    
+    /**
+     * Wrapper for getSources() and also addIdpLogoUrls() (see below)
+     *
+     * @param array $startSources, the authsources array that ssp provides to a theme
+     * @param string $authState, the AuthState string that ssp provides to a 
+     *    theme via $_GET['AuthState']
+     * @param string $sspPath (optional), the path to the simplesamlphp folder
+     **/        
+    public static function getSourcesWithLogoUrls(
+        $startSources, 
+        $authState, 
+        $sspPath=Null
+    ) {
+        $sspPath = self::getSspPath($sspPath); 
+        $asPath = $sspPath . '/config';
+        $mdPath = $sspPath . '/metadata';
 
+        $authSourcesConfig = self::getAuthSourcesConfig($asPath);
+
+        $reducedSources = self::getSourcesForSp($startSources, $authState, $sspPath);
+        
+        self::addIdpLogoUrls(
+            $reducedSources,
+            $authSourcesConfig,
+            $mdPath
+        );    
+
+        return $reducedSources;        
+    }
+    
+    /**
+     * Wrapper for getSources()  (see below)
+     *
+     * @param array $startSources, the authsources array that ssp provides to a theme
+     * @param string $authState, the AuthState string that ssp provides to a 
+     *    theme via $_GET['AuthState']
+     * @param string $sspPath (optional), the path to the simplesamlphp folder. If Null, tries
+     *   to get it from the SSP_PATH environment variable.
+     **/
+    public static function getSourcesForSp(
+        $startSources, 
+        $authState, 
+        $sspPath=Null
+    ) {
+      
+        $sspPath = self::getSspPath($sspPath);        
+        $mdPath = $sspPath . '/metadata';
+        $asPath = $sspPath . '/config';
+        $authSourcesConfig = self::getAuthSourcesConfig($asPath);
+        
+
+        $spEntries = Metadata::getSpMetadataEntries($mdPath);        
+        $spEntityId = AuthStateUtils::getSpEntityIdForMultiAuth($authState);
+        $spMetadata = $spEntries[$spEntityId];
+
+        $reducedSources = self::getSources(
+            $authSourcesConfig,
+            $startSources,
+            $spEntityId,
+            $spMetadata,
+            $mdPath
+        );    
+
+        return $reducedSources;
+    }    
+
+    /**
+     * If the parameter is Null, tries to get the SSP_PATH environment variable.
+     *
+     * @param string, for a path 
+     * @throws InvalidSspPathException if the resulting path value is null or falsey
+     **/
+    public static function getSspPath($sspPath) {
+
+        if ($sspPath === Null) {
+            $sspPath = getenv(self::SSP_PATH_ENV);            
+        }
+        
+        if (! $sspPath) {
+
+                throw new InvalidSspPathException(
+                    'Invalid path for simplesamlphp.' . PHP_EOL . 
+                        'Cannot be null or evaluate to false.',
+                    1476967000
+                );             
+        }      
+        
+        return $sspPath;
+    }
+    
+    
     /**
      *
      * Takes the original auth sources and reduces them down to the ones
@@ -52,15 +144,20 @@ class AuthSourcesUtils
         
         $idpMetadata = Metadata::getIdpMetadataEntries($metadataPath);
         $idpEntries = self::getIdpsFromAuthSources($authSourcesConfig);    
-        
+ 
         $spSources = array();  // The list of IDP's this SP wants to know about
 
         if (array_key_exists(self::IDP_SOURCES_KEY, $spMetadata)) {        
             $spSources = $spMetadata[self::IDP_SOURCES_KEY];
         }
-        
+
         foreach ($startSources as $source) {
             $idpLabel = $source['source'];
+
+            if (! isset($idpEntries[$idpLabel])) { 
+              continue; 
+            }
+            
             $idpEntityId = $idpEntries[$idpLabel];
             
             // If there is no entry for the idp in authsources, skip it.
@@ -120,13 +217,14 @@ class AuthSourcesUtils
     public static function getIdpsFromAuthSources($authSourcesConfig) {
         $idpEntries = array();
         $idpLabels = $authSourcesConfig['auth-choices']['sources'];
+
         foreach ($idpLabels as $idpLabel) {
             if ( ! isset($authSourcesConfig[$idpLabel])) {           
                 continue;
             }
             
             $idpConfig = $authSourcesConfig[$idpLabel];
-            
+
             if (isset($idpConfig['idp'])) {
                 $idpEntries[$idpLabel] = $idpConfig['idp'];
             }
