@@ -9,7 +9,7 @@ use Sil\SspUtils\Metadata;
 class AuthSourcesUtils
 {
 
-    const IDP_SOURCES_KEY = 'idpList'; // the current SP's array of acceptable IDP's
+    const IDP_SOURCES_KEY = 'IDPList'; // the current SP's array of acceptable IDP's
     
     const IDP_LOGO_KEY = 'logoURL'; // The IDP metadata array key for the url to the IDP's logo
     
@@ -117,7 +117,7 @@ class AuthSourcesUtils
      *    The relevant entries in saml20-idp-remote.php would be ...
      *      - 'excludeByDefault' (boolean), which when set to True would keep this idp
      *        from being shown to SP's that don't explicitly include it in the
-     *        'idpList' entry of their metadata.
+     *        'IDPList' entry of their metadata.
      *      - 'forSps' (array), which when set would only allow this idp to be shown
      *        to SPs whose entity_id is included in this array.
      *
