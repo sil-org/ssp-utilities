@@ -18,7 +18,57 @@ class AuthSourcesUtils
     const FOR_SPS_KEY = 'forSps';  // Entry in an IDP's metadata for SP exclusive whitelist
     
     const SSP_PATH_ENV = 'SSP_PATH'; // Environment variable for the path to the simplesamlphp code
-    
+
+    /**
+     * Takes the original auth sources and reduces them down to the ones
+     * the current SP is meant to see. Wrapper for getSources (below), but
+     * does not require an authState parameter like the getSourcesForSp method.
+     *
+     * @param array $authSourcesConfig - must have a 'auth-choices' element
+     *    which is an array that has a 'sources' element that is an array of strings
+     * @param string $spEntityId
+     * @param array $spMetadata - the current SP's metadata
+     * @param string $sspPath (optional), the path to the simplesamlphp folder
+     *
+     * @returns array of strings of entity id's of IDP's that this SP
+     *     is allowed to use for authentication.     
+     */
+    public static function getIdpsForSpNoAuthState(
+        $authSourcesConfig,
+        $spEntityId,
+        $spMetadata,
+        $sspPath=Null
+    ) {
+
+        $sspPath = self::getSspPath($sspPath);
+        $mdPath = $sspPath . '/metadata';
+
+        $startSources = [];
+        $authChoices = $authSourcesConfig['auth-choices']['sources'];
+
+        foreach ($authChoices as $nextChoice) {
+            $startSources[] = ['source' => $nextChoice];
+        }
+
+        $reducedSources = self::getSources(
+            $authSourcesConfig,
+            $startSources,
+            $spEntityId,
+            $spMetadata,
+            $mdPath
+        );
+
+       $allowedSources = [];
+
+
+       foreach ($reducedSources as $nextSource) {
+           $allowedSources[] = $authSourcesConfig[$nextSource['source']]['idp'];
+       }
+
+        return $allowedSources;
+    }    
+        
+        
     /**
      * Wrapper for getSources() and also addIdpLogoUrls() (see below)
      *
@@ -26,6 +76,8 @@ class AuthSourcesUtils
      * @param string $authState, the AuthState string that ssp provides to a 
      *    theme via $_GET['AuthState']
      * @param string $sspPath (optional), the path to the simplesamlphp folder
+     *
+     * @return array of a subset of the original $startSources.     
      **/        
     public static function getSourcesWithLogoUrls(
         $startSources, 
@@ -55,8 +107,10 @@ class AuthSourcesUtils
      * @param array $startSources, the authsources array that ssp provides to a theme
      * @param string $authState, the AuthState string that ssp provides to a 
      *    theme via $_GET['AuthState']
-     * @param string $sspPath (optional), the path to the simplesamlphp folder. If Null, tries
-     *   to get it from the SSP_PATH environment variable.
+     * @param string $sspPath (optional), the path to the simplesamlphp folder. 
+     *     If Null, tries to get it from the SSP_PATH environment variable.
+     *     
+     * @return array of a subset of the original $startSources.
      **/
     public static function getSourcesForSp(
         $startSources, 
@@ -88,7 +142,9 @@ class AuthSourcesUtils
     /**
      * If the parameter is Null, tries to get the SSP_PATH environment variable.
      *
-     * @param string, for a path 
+     * @param string $sspPath 
+     * @return string - either the input value, or if that is null,
+                        the SSP_PATH environment variable
      * @throws InvalidSspPathException if the resulting path value is null or falsey
      **/
     public static function getSspPath($sspPath) {
@@ -146,7 +202,6 @@ class AuthSourcesUtils
         $idpEntries = self::getIdpsFromAuthSources($authSourcesConfig);    
  
         $spSources = array();  // The list of IDP's this SP wants to know about
-
         if (array_key_exists(self::IDP_SOURCES_KEY, $spMetadata)) {        
             $spSources = $spMetadata[self::IDP_SOURCES_KEY];
         }

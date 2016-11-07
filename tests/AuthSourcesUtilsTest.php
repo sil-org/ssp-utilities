@@ -389,4 +389,86 @@ class AuthSourcesUtilsTest extends TestCase
 
         $this->assertEquals($expected, $results);
     }
+    
+    /*
+     * The SP that does not have an IDPList entry and is not included in any
+     * of the IDPs' forSps entry.  It should only see the IDP that does not
+     * have excludeByDefault => True and does not have a forSps entry.  
+     */
+    public function testGetIdpsForSpNoAuthStateSPBare()
+    {
+        $sspPath = __DIR__ . '/fixtures/authSources';
+        
+        $spEntityId = 'sp-bare';
+        $allSpMetadata = Metadata::getSpMetadataEntries($sspPath . '/metadata');
+        $spMetadata = $allSpMetadata[$spEntityId];
+        
+        $authSourcesConfig = AuthSourcesUtils::getAuthSourcesConfig(
+            $sspPath . '/config');
+
+        $expected = ['idp-bare'];
+        $results = AuthSourcesUtils::getIdpsForSpNoAuthState(
+            $authSourcesConfig,
+            $spEntityId,
+            $spMetadata,
+            $sspPath
+        );
+
+        $this->assertEquals($expected, $results);
+    } 
+    
+    /*
+     * The SP that does not have an IDPList entry but is included in 
+     * the IDPs' forSps entry.  It should see all the IDPs except the two that
+     * have excludeByDefault => True.  
+     */ 
+    public function testGetIdpsForSpNoAuthStateSpOnForSps()
+    {
+        $sspPath = __DIR__ . '/fixtures/authSources';
+        
+        $spEntityId = 'sp-onForSps';
+        $allSpMetadata = Metadata::getSpMetadataEntries($sspPath . '/metadata');
+        $spMetadata = $allSpMetadata[$spEntityId];
+        
+        $authSourcesConfig = AuthSourcesUtils::getAuthSourcesConfig(
+            $sspPath . '/config');
+
+        $expected = ['idp-bare', 'idp-forSps'];
+        $results = AuthSourcesUtils::getIdpsForSpNoAuthState(
+            $authSourcesConfig,
+            $spEntityId,
+            $spMetadata,
+            $sspPath
+        );
+
+        $this->assertEquals($expected, $results);
+    } 
+    
+    /*
+     * The SP that has an IDPList entry but is not included in the IDPs' 
+     * forSps entry.  It should see the IDPs that are in its IDPList,
+     * except for the ones that have a forSps entry.
+     *   
+     */ 
+    public function testGetIdpsForSpNoAuthStateSpWithIdpList()
+    {
+        $sspPath = __DIR__ . '/fixtures/authSources';
+        
+        $spEntityId = 'sp-withIdpList';
+        $allSpMetadata = Metadata::getSpMetadataEntries($sspPath . '/metadata');
+        $spMetadata = $allSpMetadata[$spEntityId];
+                
+        $authSourcesConfig = AuthSourcesUtils::getAuthSourcesConfig(
+            $sspPath . '/config');
+
+        $expected = ['idp-exclude'];
+        $results = AuthSourcesUtils::getIdpsForSpNoAuthState(
+            $authSourcesConfig,
+            $spEntityId,
+            $spMetadata,
+            $sspPath
+        );
+
+        $this->assertEquals($expected, $results);
+    } 
 }
