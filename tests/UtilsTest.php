@@ -10,8 +10,6 @@ use Sil\SspUtils\Metadata;
 class UtilsTest extends TestCase
 {
 
-    const IDP_SOURCES_KEY = 'IDPList';
-
     public function getIdpMdEntry($idpEntityId) {
         $metadataPath = __DIR__ . '/fixtures/utils/metadata';
         $idpEntries = Metadata::getIdpMetadataEntries($metadataPath);
@@ -28,8 +26,8 @@ class UtilsTest extends TestCase
         $spMdEntry = self::getSpMdEntry($spEntityId);
 
         $idps4Sp = array();  // The list of IDP's this SP wants to know about
-        if (array_key_exists(self::IDP_SOURCES_KEY, $spMdEntry)) {
-            $idps4Sp = $spMdEntry[self::IDP_SOURCES_KEY];
+        if (array_key_exists(Utils::IDP_LIST_KEY, $spMdEntry)) {
+            $idps4Sp = $spMdEntry[Utils::IDP_LIST_KEY];
         }
 
         return $idps4Sp;

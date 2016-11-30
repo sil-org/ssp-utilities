@@ -6,6 +6,7 @@ include __DIR__ . '/../vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 use Sil\SspUtils\AuthSourcesUtils;
 use Sil\SspUtils\Metadata;
+use Sil\SspUtils\Utils;
 
 class AuthSourcesUtilsTest extends TestCase
 {
@@ -322,8 +323,8 @@ class AuthSourcesUtilsTest extends TestCase
         $results = [];
         foreach ($sources as $nextSource) {
             $newEntry = [$nextSource['source']];
-            if (isset($nextSource[AuthSourcesUtils::IDP_LOGO_KEY])) {
-                $newEntry[] = $nextSource[AuthSourcesUtils::IDP_LOGO_KEY];
+            if (isset($nextSource[Utils::IDP_LOGO_KEY])) {
+                $newEntry[] = $nextSource[Utils::IDP_LOGO_KEY];
             }
             $results[] = $newEntry;
         }

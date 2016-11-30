@@ -9,10 +9,6 @@ use Sil\SspUtils\Metadata;
 class AuthSourcesUtils
 {
 
-    const IDP_SOURCES_KEY = 'IDPList'; // the current SP's array of acceptable IDP's
-    
-    const IDP_LOGO_KEY = 'logoURL'; // The IDP metadata array key for the url to the IDP's logo
-
     /**
      * Takes the original auth sources and reduces them down to the ones
      * the current SP is meant to see. Wrapper for getSources (below), but
@@ -170,8 +166,8 @@ class AuthSourcesUtils
         $idpEntries = self::getIdpsFromAuthSources($authSourcesConfig);    
  
         $spSources = array();  // The list of IDP's this SP wants to know about
-        if (array_key_exists(self::IDP_SOURCES_KEY, $spMetadata)) {        
-            $spSources = $spMetadata[self::IDP_SOURCES_KEY];
+        if (array_key_exists(Utils::IDP_LIST_KEY, $spMetadata)) {
+            $spSources = $spMetadata[Utils::IDP_LIST_KEY];
         }
 
         foreach ($startSources as $source) {
@@ -197,8 +193,10 @@ class AuthSourcesUtils
                 continue;
             }
 
-            if ( ! Utils::isIdpValidForSp($idpEntityId, $idpMdEntry,
-                                          $spEntityId, $spSources)) {
+            if ( ! Utils::isIdpValidForSp($idpEntityId,
+                                          $idpMdEntry,
+                                          $spEntityId,
+                                          $spSources)) {
                 continue;
             }
 
@@ -283,15 +281,15 @@ class AuthSourcesUtils
             $idpMdEntry = $idpMetadata[$idpEntityId];
             
             // If there is no logo URL entry in the metadata, skip it
-            if ( ! isset($idpMdEntry[self::IDP_LOGO_KEY])) {
+            if ( ! isset($idpMdEntry[Utils::IDP_LOGO_KEY])) {
                 continue;
             }        
 
-            $logoURL = $idpMdEntry[self::IDP_LOGO_KEY];          
+            $logoURL = $idpMdEntry[Utils::IDP_LOGO_KEY];
             
             // sanitize the url (remove bad characters and just return false if it's not a string)
             $logoURL = filter_var($logoURL, FILTER_SANITIZE_URL);
-            $source[self::IDP_LOGO_KEY] = $logoURL; 
+            $source[Utils::IDP_LOGO_KEY] = $logoURL;
         }  
     }
 }

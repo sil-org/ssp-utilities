@@ -8,6 +8,11 @@ include __DIR__ . '/../vendor/autoload.php';
 
 class Utils
 {
+
+    const IDP_LIST_KEY = 'IDPList'; // the current SP's array of acceptable IDP's
+
+    const IDP_LOGO_KEY = 'logoURL'; // The IDP metadata array key for the url to the IDP's logo
+
     const EXCLUDE_KEY = 'excludeByDefault'; // Entry in an IDP's metadata
 
     const FOR_SPS_KEY = 'forSps';  // Entry in an IDP's metadata for SP exclusive whitelist
