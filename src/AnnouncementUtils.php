@@ -3,6 +3,7 @@
 namespace Sil\SspUtils;
 
 use Sil\SspUtils\AuthSourcesUtils;
+use Sil\SspUtils\Utils;
 
 include __DIR__ . '/../vendor/autoload.php';
 
@@ -37,7 +38,7 @@ class AnnouncementUtils
         $folder='announcement',
         $file='announcement.php'
     ) {  
-        $sspPath = AuthSourcesUtils::getSspPath($sspPath) ;
+        $sspPath = Utils::getSspPath($sspPath) ;
         
         try {
             $announcementInfo = include $sspPath . '/' . $folder . '/' . $file;

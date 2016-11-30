@@ -12,12 +12,6 @@ class AuthSourcesUtils
     const IDP_SOURCES_KEY = 'IDPList'; // the current SP's array of acceptable IDP's
     
     const IDP_LOGO_KEY = 'logoURL'; // The IDP metadata array key for the url to the IDP's logo
-    
-    const EXCLUDE_KEY = 'excludeByDefault'; // Entry in an IDP's metadata
-    
-    const FOR_SPS_KEY = 'forSps';  // Entry in an IDP's metadata for SP exclusive whitelist
-    
-    const SSP_PATH_ENV = 'SSP_PATH'; // Environment variable for the path to the simplesamlphp code
 
     /**
      * Takes the original auth sources and reduces them down to the ones
@@ -40,7 +34,7 @@ class AuthSourcesUtils
         $sspPath=Null
     ) {
 
-        $sspPath = self::getSspPath($sspPath);
+        $sspPath = Utils::getSspPath($sspPath);
         $mdPath = $sspPath . '/metadata';
 
         $startSources = [];
@@ -84,7 +78,7 @@ class AuthSourcesUtils
         $authState, 
         $sspPath=Null
     ) {
-        $sspPath = self::getSspPath($sspPath); 
+        $sspPath = Utils::getSspPath($sspPath);
         $asPath = $sspPath . '/config';
         $mdPath = $sspPath . '/metadata';
 
@@ -118,7 +112,7 @@ class AuthSourcesUtils
         $sspPath=Null
     ) {
       
-        $sspPath = self::getSspPath($sspPath);        
+        $sspPath = Utils::getSspPath($sspPath);
         $mdPath = $sspPath . '/metadata';
         $asPath = $sspPath . '/config';
         $authSourcesConfig = self::getAuthSourcesConfig($asPath);
@@ -139,32 +133,6 @@ class AuthSourcesUtils
         return $reducedSources;
     }    
 
-    /**
-     * If the parameter is Null, tries to get the SSP_PATH environment variable.
-     *
-     * @param string $sspPath 
-     * @return string - either the input value, or if that is null,
-                        the SSP_PATH environment variable
-     * @throws InvalidSspPathException if the resulting path value is null or falsey
-     **/
-    public static function getSspPath($sspPath) {
-
-        if ($sspPath === Null) {
-            $sspPath = getenv(self::SSP_PATH_ENV);            
-        }
-        
-        if (! $sspPath) {
-
-                throw new InvalidSspPathException(
-                    'Invalid path for simplesamlphp.' . PHP_EOL . 
-                        'Cannot be null or evaluate to false.',
-                    1476967000
-                );             
-        }      
-        
-        return $sspPath;
-    }
-    
     
     /**
      *
@@ -228,63 +196,36 @@ class AuthSourcesUtils
             } else {
                 continue;
             }
-            
-            $forSpsList = Null;
-            
-            if (isset($idpMdEntry[self::FOR_SPS_KEY])) {
-                $forSpsList = $idpMdEntry[self::FOR_SPS_KEY];
-            }
 
-            // If there is an exclusive white list for this IDP, but this SP
-            // is not included, skip it
-            if ($forSpsList !== Null && ! in_array($spEntityId, $forSpsList)) {
+            if ( ! Utils::isIdpValidForSp($idpEntityId, $idpMdEntry,
+                                          $spEntityId, $spSources)) {
                 continue;
-            }         
-        
-            $excludeByDefault = False; 
-            if (isset($idpMdEntry[self::EXCLUDE_KEY]) && 
-                    $idpMdEntry[self::EXCLUDE_KEY] === True) {
-                $excludeByDefault = True;
-            }             
-            
-            // If the SP does not expect to know about certain IDP's and 
-            // this idp does not want to be seen without an explicit request, skip it.
-            if ( ! $spSources && $excludeByDefault === True) {
-                continue;
-            }  
-          
-            // If the SP only wants to know about certain IDP's and this one
-            // is not one of those, skip it.
-            if ($spSources) {
-                if ( ! in_array($idpEntityId, $spSources)) {
-                    continue;
-                }
             }
 
             // Everything is OK, so add this idp as one of the auth sources
             $reducedSources[] = $source;
         }
-        
+
         return $reducedSources;
     }
-    
+
 
     public static function getIdpsFromAuthSources($authSourcesConfig) {
         $idpEntries = array();
         $idpLabels = $authSourcesConfig['auth-choices']['sources'];
 
         foreach ($idpLabels as $idpLabel) {
-            if ( ! isset($authSourcesConfig[$idpLabel])) {           
+            if ( ! isset($authSourcesConfig[$idpLabel])) {
                 continue;
             }
-            
+
             $idpConfig = $authSourcesConfig[$idpLabel];
 
             if (isset($idpConfig['idp'])) {
                 $idpEntries[$idpLabel] = $idpConfig['idp'];
             }
         }
-      
+
         return $idpEntries;
     }
 
