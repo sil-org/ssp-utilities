@@ -62,5 +62,28 @@ class DiscoUtils
         }
         
         return $reducedIdps;        
-    }    
+    }
+
+
+    /**
+     * Takes the original idp entries and reduces them down to the ones
+     * the current SP is meant to see.
+     *
+     * @param string $spEntityId
+     * @param string $metadataPath, the path to the simplesamlphp/metadata folder
+     *
+     * @returns array of strings of entity id's of IDP's that this SP
+     *     is allowed to use for authentication.
+     */
+    public static function getIdpsForSp(
+        $spEntityId,
+        $metadataPath
+    ) {
+        $idpEntries = Metadata::getIdpMetadataEntries($metadataPath);
+
+        return self::getReducedIdpList(
+            $idpEntries,
+            $metadataPath,
+            $spEntityId);
+    }
 }

@@ -62,4 +62,31 @@ class DiscoUtilsTest extends TestCase
     }
 
 
+    /*
+     * The SP that does have an IDPList entry so will get the Idps
+     * that do not have Exclude by Default
+     */
+    public function testGetIdpsForSp_SpOnForSps()
+    {
+        $metadataPath = __DIR__ . '/fixtures/utils/metadata';
+        $idpEntries = Metadata::getIdpMetadataEntries($metadataPath);
+
+        $spEntityId = 'sp-onForSps';
+
+        $expected = [
+            'idp-bare' => $idpEntries['idp-bare'],
+            'idp-forSps' => $idpEntries['idp-forSps']
+        ];
+
+        $results = DiscoUtils::getIdpsForSp(
+            $spEntityId,
+            $metadataPath
+
+        );
+
+        // echo PHP_EOL . "AAAAA" . PHP_EOL . var_export($results, true);
+
+        $this->assertEquals($expected, $results);
+    }
+
 }
