@@ -39,9 +39,15 @@ class AnnouncementUtils
         $file='announcement.php'
     ) {  
         $sspPath = Utils::getSspPath($sspPath) ;
-        
+
+        $announcementFile = $sspPath . '/' . $folder . '/' . $file;
+
+        if ( ! file_exists($announcementFile)) {
+            return Null;
+        }
+
         try {
-            $announcementInfo = include $sspPath . '/' . $folder . '/' . $file;
+            $announcementInfo = include $announcementFile;
         } catch (Exception $e) {
             return Null;
         }
