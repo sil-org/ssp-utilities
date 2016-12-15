@@ -80,5 +80,48 @@ class AnnouncementUtilsTest extends TestCase
             $file);
         $this->assertEquals($expected, $results);
     }
-        
+
+
+    /**
+     * Good string return value
+     */
+    public function testGetSimpleAnnouncement_Good()
+    {
+        $pathFile = __DIR__ . '/fixtures/announcement/ssp-announcement.php';
+        $expected = '<div>Login Announcement</div>';
+        $results = AnnouncementUtils::getSimpleAnnouncement($pathFile);
+        $this->assertEquals($expected, $results);
+    }
+
+    /**
+     * Array return value
+     */
+    public function testGetSimpleAnnouncement_Array()
+    {
+        $pathFile = __DIR__ . '/fixtures/announcement/ssp-announcement-array.php';
+        $results = AnnouncementUtils::getSimpleAnnouncement($pathFile);
+        $this->assertNull($results);
+    }
+
+    /**
+     * Error in file
+     */
+    public function testGetSimpleAnnouncement_Bad()
+    {
+        $pathFile = __DIR__ . '/fixtures/announcement/ssp-announcement-bad.php';
+        $results = AnnouncementUtils::getSimpleAnnouncement($pathFile);
+        $this->assertNull($results);
+    }
+
+    /**
+     * File not found
+     */
+    public function testGetSimpleAnnouncement_Missing()
+    {
+        $pathFile = __DIR__ . '/fixtures/announcement/ssp-announcement-missing.php';
+        $results = AnnouncementUtils::getSimpleAnnouncement($pathFile);
+        $this->assertNull($results);
+    }
+
+
 }
