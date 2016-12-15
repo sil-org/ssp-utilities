@@ -75,4 +75,36 @@ class AnnouncementUtils
         
         return Null;
     }
+
+    /**
+     * @param string $announcementPathFile - optional for unit tests
+     *    If missing, then the announcement file will be expected to be /data/ssp-announcement.php
+     * @return string|null
+     */
+    public static function getSimpleAnnouncement(
+        $announcementPathFile=Null
+    ) {
+
+        if ( ! $announcementPathFile) {
+            $announcementPathFile = '\data\ssp-announcement.php';
+        }
+
+        if ( ! file_exists($announcementPathFile)) {
+            return Null;
+        }
+
+        //  Note: This will not actually catch errors in the included file
+        try {
+            $announcement = include $announcementPathFile;
+        } catch (Exception $e) {
+            return Null;
+        }
+
+        if ( ! is_string($announcement)) {
+            return Null;
+        }
+
+        return $announcement;
+
+    }
 }
