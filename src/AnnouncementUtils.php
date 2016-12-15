@@ -77,6 +77,8 @@ class AnnouncementUtils
     }
 
     /**
+     * Includes a php file and if it is only a string, returns that string. Otherwise, returns Null.
+     *
      * @param string $announcementPathFile - optional for unit tests
      *    If missing, then the announcement file will be expected to be /data/ssp-announcement.php
      * @return string|null
