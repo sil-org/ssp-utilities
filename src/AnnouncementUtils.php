@@ -87,8 +87,9 @@ class AnnouncementUtils
         $announcementPathFile=Null
     ) {
 
+        // If you modify this default path, make sure you use the right kind of slash
         if ( ! $announcementPathFile) {
-            $announcementPathFile = '\data\ssp-announcement.php';
+            $announcementPathFile = '/data/ssp-announcement.php';
         }
 
         if ( ! file_exists($announcementPathFile)) {
