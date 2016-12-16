@@ -2,8 +2,6 @@
 
 namespace Sil\SspUtils;
 
-include __DIR__ . '/../vendor/autoload.php';
-
 use Sil\SspUtils\Metadata;
 use Sil\SspUtils\Utils;
 

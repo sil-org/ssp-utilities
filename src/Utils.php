@@ -2,10 +2,6 @@
 
 namespace Sil\SspUtils;
 
-include __DIR__ . '/../vendor/autoload.php';
-
-
-
 class Utils
 {
 

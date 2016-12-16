@@ -5,7 +5,6 @@ namespace Sil\SspUtils;
 use Sil\SspUtils\AuthSourcesUtils;
 use Sil\SspUtils\Utils;
 
-include __DIR__ . '/../vendor/autoload.php';
 
 class AnnouncementUtils
 {
