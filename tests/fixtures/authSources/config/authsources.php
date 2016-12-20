@@ -5,7 +5,7 @@
             'multiauth:MultiAuth',
 
             'sources' => [
-                'idp-bare', 'idp-exclude', 'idp-forSps', 'idp-forSpsExclude'
+                'idp-bare', 'idp-exclude', 'idp-SPList', 'idp-SPListExclude'
             ],
         ], 
 
@@ -21,16 +21,16 @@
             'idp' => 'idp-exclude',
             'discoURL'  => NULL,
         ], 
-        'idp-forSps' =>  [
+        'idp-SPList' =>  [
             'saml:SP',
             'entityID' => 'ssp-hub',
-            'idp' => 'idp-forSps',
+            'idp' => 'idp-SPList',
             'discoURL'  => NULL,
         ],      
-        'idp-forSpsExclude' =>  [
+        'idp-SPListExclude' =>  [
             'saml:SP',
             'entityID' => 'ssp-hub',
-            'idp' => 'idp-forSpsExclude',
+            'idp' => 'idp-SPListExclude',
             'discoURL'  => NULL,
         ],                
     ];

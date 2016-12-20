@@ -38,16 +38,16 @@ class DiscoUtilsTest extends TestCase
      * The SP that does have an IDPList entry so will get the Idps
      * that do not have Exclude by Default
      */
-    public function testGetReducedIdpList_SpOnForSps()
+    public function testGetReducedIdpList_SpOnSPList()
     {
         $metadataPath = __DIR__ . '/fixtures/utils/metadata';
         $idpEntries = Metadata::getIdpMetadataEntries($metadataPath);
 
-        $spEntityId = 'sp-onForSps';
+        $spEntityId = 'sp-onSPList';
 
         $expected = [
             'idp-bare' => $idpEntries['idp-bare'],
-            'idp-forSps' => $idpEntries['idp-forSps']
+            'idp-SPList' => $idpEntries['idp-SPList']
         ];
 
         $results = DiscoUtils::getReducedIdpList(
@@ -66,16 +66,16 @@ class DiscoUtilsTest extends TestCase
      * The SP that does have an IDPList entry so will get the Idps
      * that do not have Exclude by Default
      */
-    public function testGetIdpsForSp_SpOnForSps()
+    public function testGetIdpsForSp_SpOnSPList()
     {
         $metadataPath = __DIR__ . '/fixtures/utils/metadata';
         $idpEntries = Metadata::getIdpMetadataEntries($metadataPath);
 
-        $spEntityId = 'sp-onForSps';
+        $spEntityId = 'sp-onSPList';
 
         $expected = [
             'idp-bare' => $idpEntries['idp-bare'],
-            'idp-forSps' => $idpEntries['idp-forSps']
+            'idp-SPList' => $idpEntries['idp-SPList']
         ];
 
         $results = DiscoUtils::getIdpsForSp(

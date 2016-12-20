@@ -24,8 +24,8 @@ class AuthSourcesUtilsTest extends TestCase
                     'admin',
                     'idp-bare', 
                     'idp-exclude', 
-                    'idp-forSps', 
-                    'idp-forSpsExclude', 
+                    'idp-SPList',
+                    'idp-SPListExclude',
                 ],
             ], 
 
@@ -44,16 +44,16 @@ class AuthSourcesUtilsTest extends TestCase
                 'idp' => 'idp-exclude',
                 'discoURL'  => NULL,
             ], 
-            'idp-forSps' =>  [
+            'idp-SPList' =>  [
                 'saml:SP',
                 'entityID' => 'ssp-hub',
-                'idp' => 'idp-forSps',
+                'idp' => 'idp-SPList',
                 'discoURL'  => NULL,
             ],      
-            'idp-forSpsExclude' =>  [
+            'idp-SPListExclude' =>  [
                 'saml:SP',
                 'entityID' => 'ssp-hub',
-                'idp' => 'idp-forSpsExclude',
+                'idp' => 'idp-SPListExclude',
                 'discoURL'  => NULL,
             ],             
         ];
@@ -84,8 +84,8 @@ class AuthSourcesUtilsTest extends TestCase
         $expected = [
             'idp-bare' => 'idp-bare',
             'idp-exclude' => 'idp-exclude',
-            'idp-forSps' => 'idp-forSps',
-            'idp-forSpsExclude' => 'idp-forSpsExclude',
+            'idp-SPList' => 'idp-SPList',
+            'idp-SPListExclude' => 'idp-SPListExclude',
         ];
 
         $results = AuthSourcesUtils::getIdpsFromAuthSources(self::$authSourcesConfig);
@@ -94,8 +94,8 @@ class AuthSourcesUtilsTest extends TestCase
     
     /*
      * The SP that does not have an IDPList entry and is not included in any
-     * of the IDPs' forSps entry.  It should only see the IDP that does not
-     * have excludeByDefault => True and does not have a forSps entry.  
+     * of the IDPs' SPList entry.  It should only see the IDP that does not
+     * have excludeByDefault => True and does not have a SPList entry.
      */
     public function testGetSourcesSpBare()
     {    
@@ -128,16 +128,16 @@ class AuthSourcesUtilsTest extends TestCase
     
     /*
      * The SP that does not have an IDPList entry but is included in 
-     * the IDPs' forSps entry.  It should see all the IDPs except the two that
+     * the IDPs' SPList entry.  It should see all the IDPs except the two that
      * have excludeByDefault => True.  
      */    
-    public function testGetSourcesSpOnForSps()
+    public function testGetSourcesSpOnSPList()
     {    
         $metadataPath = __DIR__ . '/fixtures/authSources/metadata';
         $spEntries = Metadata::getSpMetadataEntries($metadataPath);
         
         $startSources = self::getTestSources();
-        $spEntityId = 'sp-onForSps';
+        $spEntityId = 'sp-onSPList';
         $spMetadata = $spEntries[$spEntityId];
         
         $expected = [
@@ -146,8 +146,8 @@ class AuthSourcesUtilsTest extends TestCase
                 'details' => self::$authSourcesConfig['idp-bare'],
             ],
             [
-                'source' => 'idp-forSps',
-                'details' => self::$authSourcesConfig['idp-forSps'],
+                'source' => 'idp-SPList',
+                'details' => self::$authSourcesConfig['idp-SPList'],
             ],
         ];
         
@@ -165,16 +165,16 @@ class AuthSourcesUtilsTest extends TestCase
     
     /*
      * The SP that has an IDPList entry and is included in the IDPs' 
-     * forSps entry.  It should see all the IDPs that are in its IDPList.
+     * SPList entry.  It should see all the IDPs that are in its IDPList.
      *   
      */      
-    public function testGetSourcesSpOnForSps2()
+    public function testGetSourcesSpOnSPList2()
     {    
         $metadataPath = __DIR__ . '/fixtures/authSources/metadata';
         $spEntries = Metadata::getSpMetadataEntries($metadataPath);
         
         $startSources = self::getTestSources();
-        $spEntityId = 'sp-onForSps2';
+        $spEntityId = 'sp-onSPList2';
         $spMetadata = $spEntries[$spEntityId];
         
         $expected = [
@@ -183,8 +183,8 @@ class AuthSourcesUtilsTest extends TestCase
                 'details' => self::$authSourcesConfig['idp-bare'],
             ],
             [
-                'source' => 'idp-forSpsExclude',
-                'details' => self::$authSourcesConfig['idp-forSpsExclude'],
+                'source' => 'idp-SPListExclude',
+                'details' => self::$authSourcesConfig['idp-SPListExclude'],
             ],
         ];
         
@@ -201,8 +201,8 @@ class AuthSourcesUtilsTest extends TestCase
     
     /*
      * The SP that has an IDPList entry but is not included in the IDPs' 
-     * forSps entry.  It should see the IDPs that are in its IDPList,
-     * except for the ones that have a forSps entry.
+     * SPList entry.  It should see the IDPs that are in its IDPList,
+     * except for the ones that have a SPList entry.
      *   
      */      
     public function testGetSourcesSpWithIdpList()
@@ -245,7 +245,7 @@ class AuthSourcesUtilsTest extends TestCase
                 'multiauth:MultiAuth',
 
                 'sources' => [
-                    'idp-bare', 'idp-exclude', 'idp-forSps', 'idp-forSpsExclude',
+                    'idp-bare', 'idp-exclude', 'idp-SPList', 'idp-SPListExclude',
                 ],
             ], 
             'idp-bare' =>  [
@@ -260,16 +260,16 @@ class AuthSourcesUtilsTest extends TestCase
                 'idp' => 'idp-exclude',
                 'discoURL'  => NULL,
             ],   
-            'idp-forSps' =>  [
+            'idp-SPList' =>  [
                 'saml:SP',
                 'entityID' => 'ssp-hub',
-                'idp' => 'idp-forSps',
+                'idp' => 'idp-SPList',
                 'discoURL'  => NULL,
             ],    
-            'idp-forSpsExclude' =>  [
+            'idp-SPListExclude' =>  [
                 'saml:SP',
                 'entityID' => 'ssp-hub',
-                'idp' => 'idp-forSpsExclude',
+                'idp' => 'idp-SPListExclude',
                 'discoURL'  => NULL,
             ],     
         ];
@@ -316,8 +316,8 @@ class AuthSourcesUtilsTest extends TestCase
         $expected = [
             ['idp-bare'],
             ['idp-exclude', "http://www.bd.com"],
-            ['idp-forSps', 'http://idp-forSps-logo.png'],
-            ['idp-forSpsExclude', false],
+            ['idp-SPList', 'http://idp-SPList-logo.png'],
+            ['idp-SPListExclude', false],
         ];
         
         $results = [];
@@ -366,7 +366,7 @@ class AuthSourcesUtilsTest extends TestCase
         $authSourcesConfig = AuthSourcesUtils::getAuthSourcesConfig(
             $sspPath . '/config');
         $startSources = self::getTestSources($authSourcesConfig);
-        $spEntityId = 'sp-onForSps';
+        $spEntityId = 'sp-onSPList';
         $spMetadata = $spEntries[$spEntityId];
         
         $expected = [
@@ -375,9 +375,9 @@ class AuthSourcesUtilsTest extends TestCase
                 'details' => self::$authSourcesConfig['idp-bare'],
             ],
             [
-                'source' => 'idp-forSps',
-                'details' => self::$authSourcesConfig['idp-forSps'],
-                'logoURL' => 'http://idp-forSps-logo.png'
+                'source' => 'idp-SPList',
+                'details' => self::$authSourcesConfig['idp-SPList'],
+                'logoURL' => 'http://idp-SPList-logo.png'
             ],
         ];
         
@@ -393,8 +393,8 @@ class AuthSourcesUtilsTest extends TestCase
     
     /*
      * The SP that does not have an IDPList entry and is not included in any
-     * of the IDPs' forSps entry.  It should only see the IDP that does not
-     * have excludeByDefault => True and does not have a forSps entry.  
+     * of the IDPs' SPList entry.  It should only see the IDP that does not
+     * have excludeByDefault => True and does not have a SPList entry.
      */
     public function testGetIdpsForSpNoAuthStateSPBare()
     {
@@ -420,21 +420,21 @@ class AuthSourcesUtilsTest extends TestCase
     
     /*
      * The SP that does not have an IDPList entry but is included in 
-     * the IDPs' forSps entry.  It should see all the IDPs except the two that
+     * the IDPs' SPList entry.  It should see all the IDPs except the two that
      * have excludeByDefault => True.  
      */ 
-    public function testGetIdpsForSpNoAuthStateSpOnForSps()
+    public function testGetIdpsForSpNoAuthStateSpOnSPList()
     {
         $sspPath = __DIR__ . '/fixtures/authSources';
         
-        $spEntityId = 'sp-onForSps';
+        $spEntityId = 'sp-onSPList';
         $allSpMetadata = Metadata::getSpMetadataEntries($sspPath . '/metadata');
         $spMetadata = $allSpMetadata[$spEntityId];
         
         $authSourcesConfig = AuthSourcesUtils::getAuthSourcesConfig(
             $sspPath . '/config');
 
-        $expected = ['idp-bare', 'idp-forSps'];
+        $expected = ['idp-bare', 'idp-SPList'];
         $results = AuthSourcesUtils::getIdpsForSpNoAuthState(
             $authSourcesConfig,
             $spEntityId,
@@ -447,8 +447,8 @@ class AuthSourcesUtilsTest extends TestCase
     
     /*
      * The SP that has an IDPList entry but is not included in the IDPs' 
-     * forSps entry.  It should see the IDPs that are in its IDPList,
-     * except for the ones that have a forSps entry.
+     * SPList entry.  It should see the IDPs that are in its IDPList,
+     * except for the ones that have a SPList entry.
      *   
      */ 
     public function testGetIdpsForSpNoAuthStateSpWithIdpList()

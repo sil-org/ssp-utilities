@@ -34,7 +34,7 @@ class UtilsTest extends TestCase
     }
     /*
      * The SP that does not have an IDPList entry and the IDP does not
-     * have a forSps entry.  It should be valid.
+     * have a SPList entry.  It should be valid.
      */
     public function testIsIdpValidForSp_SpBareIdpBare()
     {
@@ -87,7 +87,7 @@ class UtilsTest extends TestCase
      */
     public function testIsIdpValidForSp_SpBareIdpHasList()
     {
-        $idpEntityId = 'idp-forSps';
+        $idpEntityId = 'idp-SPList';
         $idpMdEntry = self::getIdpMdEntry($idpEntityId);
 
         $spEntityId = 'sp-bare';
@@ -111,10 +111,10 @@ class UtilsTest extends TestCase
      */
     public function testIsIdpValidForSp_SpNoListButOnIdpList()
     {
-        $idpEntityId = 'idp-forSps';
+        $idpEntityId = 'idp-SPList';
         $idpMdEntry = self::getIdpMdEntry($idpEntityId);
 
-        $spEntityId = 'sp-onForSps';
+        $spEntityId = 'sp-onSPList';
         $idps4Sp = self::getIdpsForSp($spEntityId);
 
         $results = Utils::isIdpValidForSp(
@@ -136,10 +136,10 @@ class UtilsTest extends TestCase
      */
     public function testIsIdpValidForSp_SpNoListButOnIdpListButExclude()
     {
-        $idpEntityId = 'idp-forSpsExclude';
+        $idpEntityId = 'idp-SPListExclude';
         $idpMdEntry = self::getIdpMdEntry($idpEntityId);
 
-        $spEntityId = 'sp-onForSps';
+        $spEntityId = 'sp-onSPList';
         $idps4Sp = self::getIdpsForSp($spEntityId);
 
         $results = Utils::isIdpValidForSp(
@@ -161,10 +161,10 @@ class UtilsTest extends TestCase
      */
     public function testIsIdpValidForSp_SpWithListAndOnIdpListButExclude()
     {
-        $idpEntityId = 'idp-forSpsExclude';
+        $idpEntityId = 'idp-SPListExclude';
         $idpMdEntry = self::getIdpMdEntry($idpEntityId);
 
-        $spEntityId = 'sp-onForSpsWithIdpList';
+        $spEntityId = 'sp-onSPListWithIdpList';
         $idps4Sp = self::getIdpsForSp($spEntityId);
 
         $results = Utils::isIdpValidForSp(

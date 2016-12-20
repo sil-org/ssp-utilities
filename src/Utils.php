@@ -11,7 +11,7 @@ class Utils
 
     const EXCLUDE_KEY = 'excludeByDefault'; // Entry in an IDP's metadata
 
-    const FOR_SPS_KEY = 'forSps';  // Entry in an IDP's metadata for SP exclusive whitelist
+    const SP_LIST_KEY = 'SPList';  // Entry in an IDP's metadata for SP exclusive whitelist
 
     const SSP_PATH_ENV = 'SSP_PATH'; // Environment variable for the path to the simplesamlphp code
 
@@ -58,8 +58,8 @@ class Utils
     ) {
         $forSpsList = Null;
 
-        if (isset($idpMdEntry[self::FOR_SPS_KEY])) {
-            $forSpsList = $idpMdEntry[self::FOR_SPS_KEY];
+        if (isset($idpMdEntry[self::SP_LIST_KEY])) {
+            $forSpsList = $idpMdEntry[self::SP_LIST_KEY];
         }
 
         // If there is an exclusive white list for this IDP, but this SP

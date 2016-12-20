@@ -25,7 +25,7 @@ class DiscoUtils
      *      - 'excludeByDefault' (boolean), which when set to True would keep this idp
      *        from being shown to SP's that don't explicitly include it in the
      *        'IDPList' entry of their metadata.
-     *      - 'forSps' (array), which when set would only allow this idp to be shown
+     *      - 'SPList' (array), which when set would only allow this idp to be shown
      *        to SPs whose entity_id is included in this array.
      *
      * @param array $startIdps - with entityid => metadata mappings
