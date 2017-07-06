@@ -111,12 +111,13 @@ class DiscoUtils
      *
      * @param string the metadata folder's path
      * @param string optional (default '') ...
-     *   - if empty, then no echoed output
-     *   - if html, then html output with a style section
-     *   - if other value, then plain text output
+     *   - if html, then a string of html output with a style section is added to
+     *     the return array
+     *   - if a different value, then plain text output is added
      *
      * @returns array  ["sps" => ["sp1" => ["idp1", ...], ...],
      *                 "idps" => ["idp1" => ["sp1", ...], ...],
+     *                 "text" => "These IdP's are ..."
      *                ]
      */
     public static function listAllSpIdpLinks($metadataPath, $outputStyle='') {
@@ -136,11 +137,6 @@ class DiscoUtils
         $allLinks = [];
         $allLinks["sps"] = $spLinks;
         $allLinks["idps"] = $idpLinks;
-
-        // No echoed output requested, just return the results
-        if ( ! $outputStyle) {
-            return $allLinks;
-        }
 
         // For plain text output, don't include html tags
         $cssStyle = '';
@@ -185,34 +181,39 @@ class DiscoUtils
             $li = '    <li>';
         }
 
-        echo PHP_EOL . $cssStyle . PHP_EOL ;
-        echo $openDivLinks .
+        $humanOutput = '';
+        $humanOutput .= $cssStyle . PHP_EOL ;
+
+        $humanOutput .= $openDivLinks .
             "These IdP's are available to the corresponding Sp's" .
             $closeDiv . PHP_EOL;
 
         foreach ($idpLinks as $idpEntityId => $spList) {
-            echo $openDivEntry . "$idpEntityId is available to ..." .
+            $humanOutput .= $openDivEntry . "$idpEntityId is available to ..." .
                 $openUl . PHP_EOL;
             foreach ($spList as $nextSp) {
-                echo $li . $nextSp . PHP_EOL;
+                $humanOutput .= $li . $nextSp . PHP_EOL;
             }
-            echo  $closeUl . PHP_EOL;
-            echo $closeDiv . PHP_EOL;
+            $humanOutput .=  $closeUl . PHP_EOL;
+            $humanOutput .= $closeDiv . PHP_EOL;
         }
 
-        echo PHP_EOL . $openDivLinks .
+        $humanOutput .= PHP_EOL . $openDivLinks .
              "These SP's may use the corresponding IdP's" .
              $closeDiv . PHP_EOL;
 
         foreach ($spLinks as $spEntityId => $idpList) {
-            echo $openDivEntry . "$spEntityId may use ... " .
+            $humanOutput .= $openDivEntry . "$spEntityId may use ... " .
                 $openUl . PHP_EOL;
             foreach ($idpList as $nextIdp) {
-                echo $li . $nextIdp . PHP_EOL;
+                $humanOutput .= $li . $nextIdp . PHP_EOL;
             }
-            echo  $closeUl . PHP_EOL;
-            echo $closeDiv . PHP_EOL;
+            $humanOutput .=  $closeUl . PHP_EOL;
+            $humanOutput .= $closeDiv . PHP_EOL;
         }
+
+        $allLinks['text'] = $humanOutput;
+
         return $allLinks;
     }
 

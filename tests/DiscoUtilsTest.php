@@ -93,13 +93,12 @@ class DiscoUtilsTest extends TestCase
      * The SP that does have an IDPList entry so will get the Idps
      * that do not have Exclude by Default
      */
-    public function testListAllSpIdpLinks()
+    public function testListAllSpIdpLinksPlainText()
     {
         $metadataPath = __DIR__ . '/fixtures/utils/metadata';
-        $results = DiscoUtils::listAllSpIdpLinks($metadataPath);
+        $allResults = DiscoUtils::listAllSpIdpLinks($metadataPath);
         $expected = [
-            'sps' => [
-                'sp-bare' => [
+            'sp-bare' => [
                     'idp-bare',
                 ],
                 'sp-onSPList' => [
@@ -113,25 +112,82 @@ class DiscoUtilsTest extends TestCase
                 'sp-withIdpList' => [
                     'idp-exclude',
                 ],
+        ];
+
+        $this->assertEquals($expected, $allResults["sps"]);
+
+        $expected = [
+            'idp-bare' => [
+                'sp-bare',
+                'sp-onSPList',
+                'sp-onSPListWithIdpList',
             ],
-            'idps' => [
-                'idp-bare' => [
-                    'sp-bare',
-                    'sp-onSPList',
-                    'sp-onSPListWithIdpList',
-                ],
-                'idp-SPList' => [
-                    'sp-onSPList',
-                ],
-                'idp-SPListExclude' => [
-                    'sp-onSPListWithIdpList',
-                ],
-                'idp-exclude' => [
-                    'sp-withIdpList',
-                ],
+            'idp-SPList' => [
+                'sp-onSPList',
+            ],
+            'idp-SPListExclude' => [
+                'sp-onSPListWithIdpList',
+            ],
+            'idp-exclude' => [
+                'sp-withIdpList',
             ],
         ];
 
+        $this->assertEquals($expected, $allResults["idps"]);
+
+        $expected = PHP_EOL . "These IdP's are available";
+        $results = substr($allResults["text"], 0, strlen($expected));
+        $this->assertEquals($expected, $results);
+    }
+
+    /*
+     * The SP that does have an IDPList entry so will get the Idps
+     * that do not have Exclude by Default
+     */
+    public function testListAllSpIdpLinksPlainHtml()
+    {
+        $metadataPath = __DIR__ . '/fixtures/utils/metadata';
+        $allResults = DiscoUtils::listAllSpIdpLinks($metadataPath, "html");
+        $expected = [
+            'sp-bare' => [
+                'idp-bare',
+            ],
+            'sp-onSPList' => [
+                'idp-SPList',
+                'idp-bare',
+            ],
+            'sp-onSPListWithIdpList' => [
+                'idp-SPListExclude',
+                'idp-bare',
+            ],
+            'sp-withIdpList' => [
+                'idp-exclude',
+            ],
+        ];
+
+        $this->assertEquals($expected, $allResults["sps"]);
+
+        $expected = [
+            'idp-bare' => [
+                'sp-bare',
+                'sp-onSPList',
+                'sp-onSPListWithIdpList',
+            ],
+            'idp-SPList' => [
+                'sp-onSPList',
+            ],
+            'idp-SPListExclude' => [
+                'sp-onSPListWithIdpList',
+            ],
+            'idp-exclude' => [
+                'sp-withIdpList',
+            ],
+        ];
+
+        $this->assertEquals($expected, $allResults["idps"]);
+
+        $expected = PHP_EOL . '<style type="text/css">';
+        $results = substr($allResults["text"], 0, strlen($expected));
         $this->assertEquals($expected, $results);
     }
 
