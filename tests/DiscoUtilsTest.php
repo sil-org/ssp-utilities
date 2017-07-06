@@ -89,4 +89,50 @@ class DiscoUtilsTest extends TestCase
         $this->assertEquals($expected, $results);
     }
 
+    /*
+     * The SP that does have an IDPList entry so will get the Idps
+     * that do not have Exclude by Default
+     */
+    public function testListAllSpIdpLinks()
+    {
+        $metadataPath = __DIR__ . '/fixtures/utils/metadata';
+        $results = DiscoUtils::listAllSpIdpLinks($metadataPath);
+        $expected = [
+            'sps' => [
+                'sp-bare' => [
+                    'idp-bare',
+                ],
+                'sp-onSPList' => [
+                    'idp-SPList',
+                    'idp-bare',
+                ],
+                'sp-onSPListWithIdpList' => [
+                    'idp-SPListExclude',
+                    'idp-bare',
+                ],
+                'sp-withIdpList' => [
+                    'idp-exclude',
+                ],
+            ],
+            'idps' => [
+                'idp-bare' => [
+                    'sp-bare',
+                    'sp-onSPList',
+                    'sp-onSPListWithIdpList',
+                ],
+                'idp-SPList' => [
+                    'sp-onSPList',
+                ],
+                'idp-SPListExclude' => [
+                    'sp-onSPListWithIdpList',
+                ],
+                'idp-exclude' => [
+                    'sp-withIdpList',
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expected, $results);
+    }
+
 }
