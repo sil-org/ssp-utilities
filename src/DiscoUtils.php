@@ -41,7 +41,7 @@ class DiscoUtils
     ) {
 
         $spEntries = Metadata::getSpMetadataEntries($metadataPath);
-        $spMetadata = $spEntries[$spEntityId];
+        $spMetadata = $spEntries[$spEntityId] ?? [];
 
         $reducedIdps = [];
 
