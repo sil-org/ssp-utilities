@@ -3,7 +3,7 @@
   "description": "SimpleSAMLphp related utility classes",
   "type": "library",
   "license": "MIT",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "minimum-stability": "stable",
   "require": {
     "php": "^8.1",
