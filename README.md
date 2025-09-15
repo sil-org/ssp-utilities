@@ -3,7 +3,7 @@ SimpleSAMLphp related utility classes
 
 ## Overview
 
-This project includes utilities that are used by [ssp-base](https://github.com/silinternational/ssp-base)
+This project includes utilities that are used by [ssp-base](https://github.com/sil-org/ssp-base)
 
 It provides business logic that determines which simplesamlphp Identity Providers can be used for authentication by a certain SP.
 
