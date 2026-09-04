@@ -13,6 +13,8 @@ class Utils
 
     const SP_LIST_KEY = 'SPList';  // Entry in an IDP's metadata for SP exclusive whitelist
 
+    const SP_FORCE_AUTHN_KEY = 'ForceAuthn'; // Entry in a SP's metadata to force reauthentication
+
     const SSP_PATH_ENV = 'SSP_PATH'; // Environment variable for the path to the simplesamlphp code
 
     /**
